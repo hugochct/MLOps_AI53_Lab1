@@ -1,6 +1,12 @@
-## Milestone 1
+## Milestone 0
 
 **Engineering checkpoint 1:**
+
+A working `model.pt` only proves that a model file can be loaded; it does not prove that the same code, dependencies, data version, parameters, random seeds, environment, and training process can reproduce the result.
+
+## Milestone 1
+
+**Question:**
 
 - **`pyproject.toml`**: The project’s main configuration file. It describes the Python project, its dependencies, supported Python versions, and tool settings.
 
@@ -21,3 +27,5 @@ No. `random_state=42` only initializes the random-number generators. It can ma
 - DVC remote: Stores the actual versioned data files and other DVC-managed artifacts, such as the raw images.
 
 - Does git push transfer the DVC-managed raw images ? No, git push transfers only Git commits and metadata; the images require a separate dvc push.
+
+## Milestone 3
