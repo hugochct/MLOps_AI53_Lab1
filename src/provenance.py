@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
+import platform
 from pathlib import Path
+import subprocess
+
+import torch
 
 
 def training_data_identity(
@@ -42,7 +47,66 @@ def build_run_manifest(params: dict, device: str, mlflow_run_id: str) -> dict:
     Hints: subprocess, platform, importlib.metadata, torch,
     training_data_identity().
     """
-    raise NotImplementedError("Implement run provenance capture")
+    def package_version(name: str) -> str:
+        try:
+            return importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            return "unavailable"
+
+    try:
+        git_commit_result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        git_status_result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        git_commit_result = None
+        git_status_result = None
+
+    git_commit = (
+        git_commit_result.stdout.strip()
+        if git_commit_result is not None and git_commit_result.returncode == 0
+        else "unavailable"
+    )
+    git_dirty = (
+        bool(git_status_result.stdout.strip())
+        if git_status_result is not None and git_status_result.returncode == 0
+        else "unavailable"
+    )
+
+    return {
+        "data": {
+            "training_data_identity": training_data_identity(),
+        },
+        "environment": {
+            "python": platform.python_version(),
+            "torch": package_version("torch"),
+            "torchvision": package_version("torchvision"),
+            "dvc": package_version("dvc"),
+            "mlflow": package_version("mlflow"),
+            "os": platform.platform(),
+            "cuda": torch.version.cuda or "unavailable",
+        },
+        "configuration": {
+            "image_size": int(params["data"]["image_size"]),
+            "train": params["train"],
+            "augmentation": params["augmentation"],
+        },
+        "execution": {
+            "device": device,
+            "random_state": int(params["train"]["random_state"]),
+            "mlflow_run_id": mlflow_run_id,
+            "git_commit": git_commit,
+            "git_dirty": git_dirty,
+        },
+    }
 
 
 def write_run_manifest(params: dict, device: str, mlflow_run_id: str, path: Path) -> dict:

@@ -11,7 +11,7 @@ def set_reproducibility(seed: int) -> None:
     TODO: complete this function so that Python, NumPy and PyTorch are controlled. Improve CUDA/cuDNN repeatability when CUDA is available.
     """
     random.seed(seed)
-    # TODO: NumPy
+    # NumPy
     np.random.seed(seed)
     # TODO: PyTorch CPU
     torch.manual_seed(seed)
@@ -26,7 +26,7 @@ def set_reproducibility(seed: int) -> None:
 
 def seed_worker(worker_id: int) -> None:
     """Seed a DataLoader worker from PyTorch's worker seed."""
-    # TODO: implement worker seeding for NumPy and Python random.
+    # implement worker seeding for NumPy and Python random.
     seed_initialize = torch.initial_seed() % 2**32
     random.seed(seed_initialize)
     np.random.seed(seed_initialize)
@@ -34,7 +34,5 @@ def seed_worker(worker_id: int) -> None:
 
 def make_generator(seed: int) -> torch.Generator:
     """Return a seeded torch.Generator used for deterministic shuffling."""
-    # TODO
     generator = torch.Generator()
-    generator.manual_seed(seed)
-    return generator
+    return generator.manual_seed(seed)
