@@ -1,0 +1,150 @@
+schema: '2.0'
+stages:
+  validate:
+    cmd: uv run --locked python -m src.validate_data
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 2b62d5a2e86898b281d0136cef5fdf1c.dir
+      size: 179914877
+      nfiles: 1296
+    - path: pyproject.toml
+      hash: md5
+      md5: e648e5a0e6d5deb56529b84d5a92f886
+      size: 827
+    - path: src/validate_data.py
+      hash: md5
+      md5: 430408e2eff7369ce03d28e2b83bfd8e
+      size: 3157
+    - path: uv.lock
+      hash: md5
+      md5: afd72528b6d3d31bcbf88c92b0545f40
+      size: 373304
+    outs:
+    - path: reports/data_quality.json
+      hash: md5
+      md5: 421a4e5a30df47a94fc13ca2219710bf
+      size: 131
+  prepare:
+    cmd: uv run --locked python -m src.prepare
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 2b62d5a2e86898b281d0136cef5fdf1c.dir
+      size: 179914877
+      nfiles: 1296
+    - path: pyproject.toml
+      hash: md5
+      md5: e648e5a0e6d5deb56529b84d5a92f886
+      size: 827
+    - path: reports/data_quality.json
+      hash: md5
+      md5: 421a4e5a30df47a94fc13ca2219710bf
+      size: 131
+    - path: src/prepare.py
+      hash: md5
+      md5: ed44220f7302174d28da12d8c8c52005
+      size: 3129
+    - path: uv.lock
+      hash: md5
+      md5: afd72528b6d3d31bcbf88c92b0545f40
+      size: 373304
+    params:
+      params.yaml:
+        data.image_size: 96
+    outs:
+    - path: data/processed/manifests
+      hash: md5
+      md5: db66a66ffea39b1ef381e62a89638e3c.dir
+      size: 259976
+      nfiles: 3
+    - path: data/processed/test
+      hash: md5
+      md5: b8bab51f720815a35f45f286e27502c9.dir
+      size: 637766
+      nfiles: 128
+    - path: data/processed/train
+      hash: md5
+      md5: 3b9affaaa9bc52accbedec8d22b4fc18.dir
+      size: 5175371
+      nfiles: 1034
+    - path: data/processed/validation
+      hash: md5
+      md5: e4a505a701d0bb78afffa3c3abb944d1.dir
+      size: 662810
+      nfiles: 133
+    - path: reports/data_summary.json
+      hash: md5
+      md5: b90360dcfa3be066876ff838589dff74
+      size: 622
+  train:
+    cmd: uv run --locked python -m src.train
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 172e714cbd57d97b45f44b90a33edd6c.dir
+      size: 6735923
+      nfiles: 1298
+    - path: pyproject.toml
+      hash: md5
+      md5: e648e5a0e6d5deb56529b84d5a92f886
+      size: 827
+    - path: src/data.py
+      hash: md5
+      md5: 68a3090573fc5afa12eb0db23eae24cd
+      size: 2196
+    - path: src/model.py
+      hash: md5
+      md5: a57ec51135658d3a5c323f74393a44b4
+      size: 1081
+    - path: src/provenance.py
+      hash: md5
+      md5: 9bd9e0e80feb19add984359dfc4634c6
+      size: 3956
+    - path: src/reproducibility.py
+      hash: md5
+      md5: 4d1972fc8dbd3f7bff88faf6f56d5342
+      size: 1246
+    - path: src/train.py
+      hash: md5
+      md5: c2d881371598546974959b36dc4495e9
+      size: 15033
+    - path: uv.lock
+      hash: md5
+      md5: afd72528b6d3d31bcbf88c92b0545f40
+      size: 373304
+    params:
+      params.yaml:
+        augmentation:
+          enabled: false
+          horizontal_flip: 0.5
+          rotation_degrees: 10
+        compute:
+          device: auto
+        data.image_size: 96
+        tracking:
+          uri: http://127.0.0.1:5000
+          experiment: bean-image-classification
+        train:
+          batch_size: 32
+          epochs: 4
+          learning_rate: 0.001
+          dropout: 0.3
+          random_state: 42
+    outs:
+    - path: models/model.pt
+      hash: md5
+      md5: 86a63873c240ad4ecade574a74ff8e1d
+      size: 98673
+    - path: reports/run_manifest.json
+      hash: md5
+      md5: 4a94beaabf010dff11b14bb3771c7de8
+      size: 879
+    - path: reports/train_summary.json
+      hash: md5
+      md5: 19d8430d4aaba2dad3252dbe37bebc31
+      size: 255
+    - path: reports/training_curves.png
+      hash: md5
+      md5: aa717c092740dbb1957b4ebb47c09477
+      size: 90120

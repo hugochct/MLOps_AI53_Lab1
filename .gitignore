@@ -17,6 +17,7 @@ mlruns/
 data/raw/
 data/processed/
 models/*.pt
+/reports/data_quality.json
 
 # SQLite sidecars and local logs
 mlflow.db-*

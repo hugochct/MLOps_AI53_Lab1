@@ -1,9 +1,0 @@
-{
-  "splits": {
-    "test": 128,
-    "train": 1034,
-    "validation": 133
-  },
-  "status": "PASS",
-  "total_images": 1295
-}

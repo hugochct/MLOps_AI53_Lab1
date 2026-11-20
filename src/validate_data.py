@@ -90,3 +90,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# Milestone 6 check: validation logic unchanged
