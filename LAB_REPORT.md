@@ -65,10 +65,10 @@ No. `random_state=42` only initializes the random-number generators. It can ma
 
 | Change                                                         | VALIDATE | PREPARE | TRAIN  | EVALUATE     |
 | -------------------------------------------------------------- | -------- | ------- | ------ | ------------ |
-| Change `train.learning_rate`                                   | REUSED   | REUSED  | RERUN  | NEEDS UPDATE |
-| Change `data.image_size`                                       | REUSED   | RERUN   | RERUN  | NEEDS UPDATE |
-| Edit `src/validate_data.py`; the quality report stays the same | RERUN    | REUSED  | REUSED | REUSED       |
-| Edit only `README.md`                                          | REUSED   | REUSED  | REUSED | REUSED       |
+| Change `train.learning_rate`                                   | REUSED   | REUSED  | RERUN  | NOT RUN      |
+| Change `data.image_size`                                       | REUSED   | RERUN   | RERUN  | NOT RUN      |
+| Edit `src/validate_data.py`; the quality report stays the same | RERUN    | REUSED  | REUSED | NOT RUN      |
+| Edit only `README.md`                                          | REUSED   | REUSED  | REUSED | NOT RUN      |
 
 **Engineering checkpoint 5:**
 
@@ -84,4 +84,38 @@ If two Runs have the same macro-F1, I will choose the Run with the higher valida
 
 I expect a lower learning rate to make training slower and produce smaller parameter updates. With the fixed number of epochs, it may lead to slower convergence and lower final validation scores, but it can also make training more stable and reduce the risk of overshooting a good solution.
 
-The first execution created Run A with ID 4b024f15b35345fbb34c5d6ef4f5c536. Running DVC again without changes skipped the stages. After adding a comment to src/validate_data.py, VALIDATE ran again, while PREPARE and TRAIN remained unchanged and were skipped.
+Run A ID: 4b024f15b35345fbb34c5d6ef4f5c536. Its final validation metrics were accuracy 0.6391, macro-F1 0.6254, and validation loss 0.8327.
+
+Run B ID: fbe6e72d46a84a33abf6d2f3561ef673. It used learning_rate 0.0003 and achieved final validation accuracy 0.6165, macro-F1 0.6091, and validation loss 0.8927.
+
+**Second table — observed DVC behavior:**
+
+| Check | VALIDATE | PREPARE | TRAIN | EVALUATE |
+| --- | --- | --- | --- | --- |
+| Rerun without changing anything | REUSED | REUSED | REUSED | NOT RUN |
+| Add a comment that leaves the quality report unchanged | REUSED | REUSED | REUSED | NOT RUN |
+| Set `train.learning_rate` to 0.0003 | REUSED | REUSED | RERUN | NOT RUN |
+
+Relevant terminal lines:
+
+```text
+Stage 'validate' didn't change, skipping
+Stage 'prepare' didn't change, skipping
+Stage 'train' didn't change, skipping
+Data and pipelines are up to date.
+```
+
+After setting the learning rate:
+
+```text
+train:
+    changed deps:
+        params.yaml:
+            modified:           train
+Stage 'validate' didn't change, skipping
+Stage 'prepare' didn't change, skipping
+Running stage 'train':
+> uv run --locked python -m src.train
+```
+
+These observations match my predictions. No stage is rerun when the project or report is unchanged. VALIDATE and PREPARE are reused after the learning-rate change because they do not declare `train.learning_rate` as an input. TRAIN reruns because `dvc.yaml` declares the `train` parameter group. EVALUATE is not run by `dvc repro train`.
