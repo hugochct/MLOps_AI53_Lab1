@@ -1,0 +1,51 @@
+stages:
+  validate:
+    cmd: uv run --locked python -m src.validate_data
+    deps:
+    - data/raw
+    - src/validate_data.py
+    - pyproject.toml
+    - uv.lock
+    outs:
+    - reports/data_quality.json
+
+  prepare:
+    cmd: uv run --locked python -m src.prepare
+    deps:
+    - data/raw
+    - reports/data_quality.json
+    - src/prepare.py
+    - pyproject.toml
+    - uv.lock
+    params:
+    - data.image_size
+    outs:
+    - data/processed/train
+    - data/processed/validation
+    - data/processed/test
+    - data/processed/manifests
+    - reports/data_summary.json
+
+  train:
+    cmd: uv run --locked python -m src.train
+    deps:
+    - data/processed
+    - src/train.py
+    - src/data.py
+    - src/model.py
+    - src/provenance.py
+    - src/reproducibility.py
+    - pyproject.toml
+    - uv.lock
+    params:
+    - data.image_size
+    - train
+    - augmentation
+    - compute
+    - tracking
+    outs:
+    - models/model.pt
+    - reports/train_summary.json
+    - reports/training_curves.png
+    - reports/run_manifest.json
+
