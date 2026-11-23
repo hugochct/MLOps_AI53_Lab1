@@ -141,3 +141,11 @@ Comparing B with A, the lower learning rate led to lower validation accuracy, lo
 Comparing C with A, the higher dropout led to lower validation accuracy, lower macro-F1, and slightly higher validation loss. This does not support the possibility that stronger dropout improved generalization in this run; it appears to have made fitting harder under the current setup. The run took longer to train, but the longer training time does not improve the validation evidence.
 
 **Engineering checkpoint 6:** Validation macro-F1 is the primary metric because this is a three-class problem and macro-F1 gives every class equal importance, even if they contain different numbers of images or a run makes errors concentrated on one class. Validation accuracy is the tie-break metric, and validation loss is used if accuracy is also tied. The test set remains unused until model selection is complete, so that the final test scores are not used to choose or tune the model.
+
+## Milestone 8
+
+**Selected Run:** `4b024f15b35345fbb34c5d6ef4f5c536`
+
+Run A was selected because it obtained the highest validation macro-F1 among the three runs: `0.6254`, compared with `0.6091` for Run B and `0.6139` for Run C. Run A also obtained the highest validation accuracy (`0.6391`) and the lowest validation loss (`0.8327`), so it is consistent under the chosen primary metric and tie-break evidence.
+
+**Trade-off or limitation:** The comparison uses one random seed, four epochs, and a validation set of 133 images. The differences are small, so the selected Run is the best candidate for this setup but does not prove that the baseline configuration is better in general. The test set is still kept separate until final evaluation.
