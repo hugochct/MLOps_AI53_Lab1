@@ -119,3 +119,9 @@ Running stage 'train':
 ```
 
 These observations match my predictions. No stage is rerun when the project or report is unchanged. VALIDATE and PREPARE are reused after the learning-rate change because they do not declare `train.learning_rate` as an input. TRAIN reruns because `dvc.yaml` declares the `train` parameter group. EVALUATE is not run by `dvc repro train`.
+
+## Milestone 7
+
+**Run C setup:** Run C returns `train.learning_rate` to the baseline value `0.001` and changes exactly one additional setting: `train.dropout` from `0.30` to `0.50`.
+
+I expect the higher dropout to act as stronger regularization. It may reduce overfitting and could improve validation macro-F1 or accuracy, but it may also reduce the model's fitting capacity and produce lower training and validation scores. Because Run C uses only four epochs and one random seed, a small difference may not indicate general superiority.
