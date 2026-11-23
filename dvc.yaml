@@ -49,3 +49,25 @@ stages:
     - reports/training_curves.png
     - reports/run_manifest.json
 
+  evaluate:
+    cmd: uv run --locked python -m src.evaluate
+    deps:
+    - data/processed
+    - src/evaluate.py
+    - src/data.py
+    - src/provenance.py
+    - src/reproducibility.py
+    - pyproject.toml
+    - uv.lock
+    params:
+    - data.image_size
+    - evaluation
+    - compute
+    - tracking
+    - selection
+    outs:
+    - reports/test_confusion_matrix.png
+    metrics:
+    - reports/test_metrics.json:
+        cache: false
+

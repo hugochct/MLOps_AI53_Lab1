@@ -2,3 +2,4 @@
 /train_summary.json
 /training_curves.png
 /run_manifest.json
+/test_confusion_matrix.png

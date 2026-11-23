@@ -149,3 +149,5 @@ Comparing C with A, the higher dropout led to lower validation accuracy, lower m
 Run A was selected because it obtained the highest validation macro-F1 among the three runs: `0.6254`, compared with `0.6091` for Run B and `0.6139` for Run C. Run A also obtained the highest validation accuracy (`0.6391`) and the lowest validation loss (`0.8327`), so it is consistent under the chosen primary metric and tie-break evidence.
 
 **Trade-off or limitation:** The comparison uses one random seed, four epochs, and a validation set of 133 images. The differences are small, so the selected Run is the best candidate for this setup but does not prove that the baseline configuration is better in general. The test set is still kept separate until final evaluation.
+
+**Final test results:** The selected Run was `4b024f15b35345fbb34c5d6ef4f5c536`. The final test accuracy was `0.6484375` and the test macro-F1 was `0.6444771241830066`. The test data was not used to train or select the model; it was evaluated only after Run A was selected using validation evidence.
