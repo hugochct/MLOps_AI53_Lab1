@@ -125,3 +125,19 @@ These observations match my predictions. No stage is rerun when the project or r
 **Run C setup:** Run C returns `train.learning_rate` to the baseline value `0.001` and changes exactly one additional setting: `train.dropout` from `0.30` to `0.50`.
 
 I expect the higher dropout to act as stronger regularization. It may reduce overfitting and could improve validation macro-F1 or accuracy, but it may also reduce the model's fitting capacity and produce lower training and validation scores. Because Run C uses only four epochs and one random seed, a small difference may not indicate general superiority.
+
+**Run C ID:** `3f3958e85ddf4aa1acf429cc0e58b70d`
+
+**Controlled validation comparison**
+
+| Run | Controlled change | Val. Accuracy | Val. Macro-F1 | Val. Loss | Training time (seconds) | MLflow Run ID |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| A | Baseline: learning_rate 0.001, dropout 0.30 | 0.6391 | 0.6254 | 0.8327 | 13.04 | `4b024f15b35345fbb34c5d6ef4f5c536` |
+| B | Learning rate 0.0003, dropout 0.30 | 0.6165 | 0.6091 | 0.8927 | 13.23 | `fbe6e72d46a84a33abf6d2f3561ef673` |
+| C | Baseline learning rate 0.001, dropout 0.50 | 0.6241 | 0.6139 | 0.8397 | 16.29 | `3f3958e85ddf4aa1acf429cc0e58b70d` |
+
+Comparing B with A, the lower learning rate led to lower validation accuracy, lower macro-F1, and higher validation loss after four epochs. This supports the prediction that, with the fixed number of epochs, 0.0003 could converge more slowly and produce weaker final validation scores. It does not provide evidence that 0.0003 is worse in general, because only one seed and a small validation set are used.
+
+Comparing C with A, the higher dropout led to lower validation accuracy, lower macro-F1, and slightly higher validation loss. This does not support the possibility that stronger dropout improved generalization in this run; it appears to have made fitting harder under the current setup. The run took longer to train, but the longer training time does not improve the validation evidence.
+
+**Engineering checkpoint 6:** Validation macro-F1 is the primary metric because this is a three-class problem and macro-F1 gives every class equal importance, even if they contain different numbers of images or a run makes errors concentrated on one class. Validation accuracy is the tie-break metric, and validation loss is used if accuracy is also tied. The test set remains unused until model selection is complete, so that the final test scores are not used to choose or tune the model.
